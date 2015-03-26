@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+
+  "name": "postgrep",
+  "description": "Grep my Facebook posts",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "tabs", "activeTab", "*://*.facebook.com/*"
+  ]
+}
