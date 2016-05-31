@@ -1,6 +1,5 @@
-
 function renderStatus(statusText) {
-  document.getElementById('status').textContent = statusText;
+	document.getElementById('status').textContent = statusText;
 }
 
 // url 요청 결과를 json으로 파싱
@@ -27,8 +26,10 @@ function getJSONResults(url, callback, errorCallback) {
 
 var obj;
 
-function search(url) {
-
+function search(url, page) {
+	if (!page || page < 1)
+		page = 1;
+	
 	// url이 비었으면 페이지에서 읽어서 url 구성
 	if (!url || url == '')  {
 		var token = document.getElementById('token').value;
@@ -36,7 +37,7 @@ function search(url) {
 			renderStatus('token is required!');
 			return;
 		}
-		url = 'https://graph.facebook.com/me?fields=posts.limit(50)&access_token=' + token;
+		url = 'https://graph.facebook.com/v2.0/me?fields=posts.limit(50)&access_token=' + token;
 	}
 
 	// searchStr
@@ -46,7 +47,7 @@ function search(url) {
 		return;
 	}
 
-	renderStatus('searching: ' + searchStr);
+	renderStatus('searching recent ' + ((page - 1) * 50 + 1) + ' to ' + (page * 50) + ' posts: ' + searchStr);
 
 	// url 요청
 	getJSONResults(url, function(j) {
@@ -81,7 +82,7 @@ function search(url) {
 		paging = j.posts.paging;
 	
 	// 이전 페이지 검색 버튼
-	if (paging.previous) {
+	if (page > 1 && paging.previous) {
 		out += '<button id="prev">previous</button> ';
 	}
 	// 다음 페이지 검색 버튼
@@ -93,11 +94,12 @@ function search(url) {
     document.getElementById('results').innerHTML = out;
 	
 	// 이전 페이지, 다음 페이지 버튼에 클릭 이벤트 연결
-	document.getElementById('prev').addEventListener('click', function(e) {
-		search(paging.previous.replace('%amp;','&'));
-	});
+	if (page > 1)
+		document.getElementById('prev').addEventListener('click', function(e) {
+			search(paging.previous.replace('%amp;','&'), page - 1);
+		});
 	document.getElementById('next').addEventListener('click', function(e) {
-		search(paging.next.replace('%amp;','&'));
+		search(paging.next.replace('%amp;','&'), page + 1);
 	});
   },
   function(errorMessage) {
@@ -110,18 +112,10 @@ function startSearch(e) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-	// 검색 버튼 클릭 이벤트
 	document.getElementById('searchbtn').addEventListener('click', startSearch);
-});
-
-// 익스텐션에서 메시지를 받았을 때
-chrome.runtime.onMessage.addListener(function(msg, _, sendResponse) {
-	// 메시지에 토큰과 검색 문자열이 존재하면 페이지에 바로 세팅
-	if (msg.token)
-		document.getElementById('token').value = msg.token;
-	if (msg.searchStr)
-		document.getElementById('searchstr').value = msg.searchStr;
-	// 검색 실행
-	if (msg.searchNow)
-		search();
+	document.getElementById('tokenbtn').addEventListener('click', checkToken);
+	searchToken(function(token) {
+		if (token)
+			document.getElementById('token').value = token;
+	});
 });

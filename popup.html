@@ -13,11 +13,7 @@
         font-size: 100%;
       }
       #status {
-        /* avoid an excessively wide status text */
         white-space: pre;
-        /*text-overflow: ellipsis;*/
-        /*overflow: hidden;*/
-        /*max-width: 400px;*/
       }
     </style>
 
@@ -27,13 +23,13 @@
       -
       - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
      -->
-    <script src="popup.js"></script>
   </head>
   <body>
     <p>facebook token: <input type="text" id="token"></p>
-	<p>text to search: <input type="text" id="searchstr"></p>
+	<button id="tokenbtn">get token</button>
 	<button id="searchbtn">search</button>
-    <div id="status"></div>
+    <script src="base.js"></script>
+    <script src="popup.js"></script>
   </body>
 </html>
 
