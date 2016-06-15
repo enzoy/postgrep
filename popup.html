@@ -1,9 +1,4 @@
 <!doctype html>
-<!--
- This page is shown when the extension button is clicked, because the
- "browser_action" field in manifest.json contains the "default_popup" key with
- value "popup.html".
- -->
 <html>
   <head>
     <title>postgrep</title>
@@ -16,20 +11,15 @@
         white-space: pre;
       }
     </style>
-
-    <!--
-      - JavaScript and HTML must be in separate files: see our Content Security
-      - Policy documentation[1] for details and explanation.
-      -
-      - [1]: https://developer.chrome.com/extensions/contentSecurityPolicy
-     -->
   </head>
   <body>
-    <p>facebook token: <input type="text" id="token"></p>
-	<button id="tokenbtn">get token</button>
-	<button id="searchbtn">search</button>
-    <script src="base.js"></script>
-    <script src="popup.js"></script>
+    <div id="popup" style="width:400px;">
+      facebook token: <input type="text" id="token"><button id="tokenbtn">get token</button><p>
+    	text to search: <input type="text" id="searchstr"><button id="searchbtn">search</button>
+      <div id="status" style="border: 1px solid black;"></div>
+      <div id="results" style="border: 1px solid gray;"></div>
+      <script src="base.js"></script>
+      <script src="popup.js"></script>
+    </div>
   </body>
 </html>
-
