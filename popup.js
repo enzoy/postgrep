@@ -2,7 +2,7 @@ function renderStatus(statusText) {
 	document.getElementById('status').textContent = statusText;
 }
 
-// url ¿äÃ» °á°ú¸¦ jsonÀ¸·Î ÆÄ½Ì
+// url ï¿½ï¿½Ã» ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ jsonï¿½ï¿½ï¿½ï¿½ ï¿½Ä½ï¿½
 function getJSONResults(url, callback, errorCallback) {
 	var x = new XMLHttpRequest();
 	x.open('GET', url);
@@ -29,8 +29,8 @@ var obj;
 function search(url, page) {
 	if (!page || page < 1)
 		page = 1;
-	
-	// urlÀÌ ºñ¾úÀ¸¸é ÆäÀÌÁö¿¡¼­ ÀÐ¾î¼­ url ±¸¼º
+
+	// urlï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð¾î¼­ url ï¿½ï¿½ï¿½ï¿½
 	if (!url || url == '')  {
 		var token = document.getElementById('token').value;
 		if (token == '') {
@@ -49,12 +49,12 @@ function search(url, page) {
 
 	renderStatus('searching recent ' + ((page - 1) * 50 + 1) + ' to ' + (page * 50) + ' posts: ' + searchStr);
 
-	// url ¿äÃ»
+	// url ï¿½ï¿½Ã»
 	getJSONResults(url, function(j) {
 		obj = j;
 		var re = new RegExp(searchStr, "i");
 		var out = "";
-		// "{ data: [...] }" ÇüÅÂÀÏ ¼öµµ ÀÖ°í, "{ posts { data: [...] } }" ÇüÅÂÀÏ ¼öµµ ÀÖ´Ù.
+		// "{ data: [...] }" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½, "{ posts { data: [...] } }" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½.
 		var data = j.data;
 		if (!data)
 			data = j.posts.data;
@@ -64,36 +64,37 @@ function search(url, page) {
 			if (!data[i] || !data[i].message || !data[i].message.search)
 				continue;
 			if (data[i].message.search(re) > 0) {
-				// searchStrÀÌ ÀÖ´Â Æ÷½ºÆ® ¹ß°ß
-				// id´Â "userid_messageid" ÇüÅÂ
+				// searchStrï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ß°ï¿½
+				// idï¿½ï¿½ "userid_messageid" ï¿½ï¿½ï¿½ï¿½
 				var pos = data[i].id.indexOf('_');
-				// ÇØ´ç Æ÷½ºÆ®ÀÇ ¸µÅ©¸¦ Æ÷ÇÔÇØ¼­ Æ÷½ºÆ® ¸Þ½ÃÁö¸¦ Ãâ·Â
-				out += '<p><a href="http://facebook.com/' + data[i].id.substring(0,pos) + '/posts/' + data[i].id.substring(pos+1) + '" target="_blank">[' + data[i].type + '] ' + data[i].created_time + '</a><br>';
-				out += data[i].message.replace(re, '<b style="color:red;background-color:yellow">' + searchStr + '</b>') + '</p>\n';
+				// ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½Å©ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½Þ½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+				out += '<p style="font-size:0.7em;"><a href="http://facebook.com/' + data[i].id.substring(0,pos) + '/posts/' + data[i].id.substring(pos+1) + '" target="_blank">[' + data[i].type + '] ' + data[i].created_time + '</a><br>';
+				sliced = data[i].message.slice(0,200);
+				out += sliced.replace(re, '<b style="color:red;background-color:yellow">' + searchStr + '</b>') + '</p>\n';
 			}
 	}
 	if (out == "")
 		out = "No results...<p\n>";
 	out += '<p>\n';
 
-	// "{ paging: {...} }" ÇüÅÂÀÏ ¼öµµ ÀÖ°í, "{ posts { paging: {...} } }" ÇüÅÂÀÏ ¼öµµ ÀÖ´Ù.
+	// "{ paging: {...} }" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö°ï¿½, "{ posts { paging: {...} } }" ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ö´ï¿½.
 	var paging = j.paging;
 	if (!paging)
 		paging = j.posts.paging;
-	
-	// ÀÌÀü ÆäÀÌÁö °Ë»ö ¹öÆ°
+
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½ï¿½Æ°
 	if (page > 1 && paging.previous) {
 		out += '<button id="prev">previous</button> ';
 	}
-	// ´ÙÀ½ ÆäÀÌÁö °Ë»ö ¹öÆ°
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ë»ï¿½ ï¿½ï¿½Æ°
 	if (paging.next) {
 		out += '<button id="next">next</button>';
 	}
 
-	// ¿Ï¼ºµÈ HTML ÄÚµå »ðÀÔ
+	// ï¿½Ï¼ï¿½ï¿½ï¿½ HTML ï¿½Úµï¿½ ï¿½ï¿½ï¿½ï¿½
     document.getElementById('results').innerHTML = out;
-	
-	// ÀÌÀü ÆäÀÌÁö, ´ÙÀ½ ÆäÀÌÁö ¹öÆ°¿¡ Å¬¸¯ ÀÌº¥Æ® ¿¬°á
+
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Æ°ï¿½ï¿½ Å¬ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 	if (page > 1)
 		document.getElementById('prev').addEventListener('click', function(e) {
 			search(paging.previous.replace('%amp;','&'), page - 1);
