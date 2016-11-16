@@ -1,8 +1,8 @@
-function renderStatus(statusText) {
+﻿function renderStatus(statusText) {
 	document.getElementById('status').textContent = statusText;
 }
 
-// url ��û ������ json���� �Ľ�
+// url url 요청 결과를 json으로 파싱
 function getJSONResults(url, callback, errorCallback) {
 	var x = new XMLHttpRequest();
 	x.open('GET', url);
@@ -30,7 +30,7 @@ function search(url, page) {
 	if (!page || page < 1)
 		page = 1;
 
-	// url�� �������� ���������� �о url ����
+	// url이 비었으면 페이지에서 읽어서 url 구성
 	if (!url || url == '')  {
 		var token = document.getElementById('token').value;
 		if (token == '') {
@@ -49,12 +49,12 @@ function search(url, page) {
 
 	renderStatus('searching recent ' + ((page - 1) * 50 + 1) + ' to ' + (page * 50) + ' posts: ' + searchStr);
 
-	// url ��û
+	// url 요청
 	getJSONResults(url, function(j) {
 		obj = j;
 		var re = new RegExp(searchStr, "i");
 		var out = "";
-		// "{ data: [...] }" ������ ���� �ְ�, "{ posts { data: [...] } }" ������ ���� �ִ�.
+		// "{ data: [...] }" 형태일 수도 있고, "{ posts { data: [...] } }" 형태일 수도 있다.
 		var data = j.data;
 		if (!data)
 			data = j.posts.data;
@@ -64,10 +64,10 @@ function search(url, page) {
 			if (!data[i] || !data[i].message || !data[i].message.search)
 				continue;
 			if (data[i].message.search(re) > 0) {
-				// searchStr�� �ִ� ����Ʈ �߰�
-				// id�� "userid_messageid" ����
+				// searchStr이 있는 포스트 발견
+				// id는 "userid_messageid" 형태
 				var pos = data[i].id.indexOf('_');
-				// �ش� ����Ʈ�� ��ũ�� �����ؼ� ����Ʈ �޽����� ����
+				// 해당 포스트의 링크를 포함해서 포스트 메시지를 출력
 				out += '<p style="font-size:0.7em;"><a href="http://facebook.com/' + data[i].id.substring(0,pos) + '/posts/' + data[i].id.substring(pos+1) + '" target="_blank">[' + data[i].type + '] ' + data[i].created_time + '</a><br>';
 				sliced = data[i].message.slice(0,200);
 				out += sliced.replace(re, '<b style="color:red;background-color:yellow">' + searchStr + '</b>') + '</p>\n';
@@ -77,24 +77,24 @@ function search(url, page) {
 		out = "No results...<p\n>";
 	out += '<p>\n';
 
-	// "{ paging: {...} }" ������ ���� �ְ�, "{ posts { paging: {...} } }" ������ ���� �ִ�.
+	// "{ paging: {...} }" 형태일 수도 있고, "{ posts { paging: {...} } }" 형태일 수도 있다.
 	var paging = j.paging;
 	if (!paging)
 		paging = j.posts.paging;
 
-	// ���� ������ �˻� ��ư
+	// 이전 페이지 검색 버튼
 	if (page > 1 && paging.previous) {
 		out += '<button id="prev">previous</button> ';
 	}
-	// ���� ������ �˻� ��ư
+	// 다음 페이지 검색 버튼
 	if (paging.next) {
 		out += '<button id="next">next</button>';
 	}
 
-	// �ϼ��� HTML �ڵ� ����
+	// 완성된 HTML 코드 삽입
     document.getElementById('results').innerHTML = out;
 
-	// ���� ������, ���� ������ ��ư�� Ŭ�� �̺�Ʈ ����
+	// 이전 페이지, 다음 페이지 버튼에 클릭 이벤트 연결
 	if (page > 1)
 		document.getElementById('prev').addEventListener('click', function(e) {
 			search(paging.previous.replace('%amp;','&'), page - 1);
